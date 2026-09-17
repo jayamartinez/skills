@@ -1,40 +1,55 @@
 ---
 name: validate-change
-description: Use after implementation, cleanup, or fixes to verify changed behavior and readiness for human testing, and for final validation during authorized PR preparation. Discover checks from the actual repository. Do not commit, push, open a PR, or merge as part of this skill.
+description: Use after implementation, cleanup, or fixes to verify current behavior with diff-sensitive checks and proportional runtime evidence, and during authorized PR preparation. Includes conditional security and performance review. Does not authorize shipping or merge.
 ---
 
 # Validate change
 
-Answer: "Does the change actually appear to work?" Clean structure is assessed by `/code-structure`; automated success does not replace hands-on testing.
+Answer “Does the current change actually appear to work?” Passing commands are evidence, not the whole answer. `/code-structure` separately assesses local maintainability.
 
-## Discover the checks
+## Read the diff and choose checks
 
-Read applicable `AGENTS.md`, the changed files and surrounding behavior, package scripts, build system, test configuration, language/framework, and relevant CI configuration. Use the repository's documented tools, package manager, and existing commands. Do not assume every project is JavaScript or invent scripts that do not exist.
+Read applicable `AGENTS.md`, acceptance criteria, task state, the complete diff and untracked task files, surrounding behavior, repository scripts, CI, and stack conventions. Use documented tools and package managers; do not assume JavaScript or invent missing commands.
 
-Choose checks proportionate to affected behavior and risk. When applicable, include format checking, lint, static types, targeted unit/integration/backend tests, compilation or production build, application startup, and smoke tests. JS/TS projects commonly need lint, typecheck, tests, and a production build, but inspect the project first. Use focused regression tests for meaningful behavior or concrete risks; do not add tests that merely mirror trivial edits.
+Choose checks proportional to behavior and risk. Include normal gates such as format, lint, static types, targeted tests, build, startup, and smoke testing when applicable, then add diff-triggered checks:
+
+- dependencies/manifests/lockfiles: consistency, install/build impact, provenance, and unexpected additions;
+- database/schema/migrations: forward behavior, compatibility or rollback where supported, and data safety;
+- UI: targeted interaction plus relevant loading, empty, error, responsive, and accessibility states;
+- APIs/schemas/events: representative exchanges, validation, compatibility, and consumers;
+- concurrency/state: ordering, retries, races, idempotency, transactions, and observable transitions;
+- infrastructure/config: syntax, environment assumptions, secret handling, and deploy sanity where practical;
+- security-sensitive boundaries: attacker-controlled input, authentication versus authorization, injection, SSRF, traversal, secret/log exposure, unsafe defaults, replay, races, privilege escalation, and data leakage as relevant;
+- performance-sensitive paths: representative scale, request/query counts, batching, rendering, payloads, allocations, blocking work, resource lifecycle, caching and invalidation. Measure before/after when making a practical performance claim.
+
+Apply only relevant bullets. Do not run a generic security or performance audit on unrelated prose or CSS.
+
+## Collect behavioral evidence
+
+Select the lightest evidence that demonstrates the changed behavior:
+
+- bug fix: reproduce before when practical, then show the same case succeeds and add regression coverage when valuable;
+- UI: targeted browser interaction, screenshot/recording, or Playwright result;
+- API: representative request/response and contract behavior;
+- CLI/backend: representative command/output or input/output pair;
+- distributed/stateful flow: relevant logs, events, records, or state transitions;
+- performance claim: comparable before/after measurement.
+
+For meaningful visible changes, preserve useful before and after media for `/before-and-after` during PR preparation. Use after-only evidence for net-new UI. Do not upload or publish sensitive/private media during validation.
+
+Evidence must correspond to the current code and environment. Rerun affected evidence after later edits, synchronization, conflict resolution, or meaningful configuration changes. Skip heavyweight artifacts when they add little review value.
 
 ## Execute and investigate
 
-1. Run relevant existing checks. Record the commands, scope, and exact results. Distinguish **passed**, **failed**, **blocked**, **not run**, and **not applicable**. A missing command or unavailable environment is not a pass.
-2. Investigate failures enough to distinguish task regressions from existing failures or environment problems; label uncertain causes as uncertain. Fix in-scope regressions and rerun affected checks. Do not disable tests or weaken checks to obtain a pass.
-3. For UI/interactive changes, start the application and run targeted browser/Playwright and smoke checks when practical and supported. Exercise changed interactions and relevant loading, empty, error, and accessibility behavior. State environment and mock/live-data limits. Never claim automated browser tests replace human visual or interaction testing.
-4. After fixes or structural changes, rerun checks whose evidence was invalidated. Broaden testing only for a remaining risk or required project gate.
-
-For instruction/documentation-only repositories, check frontmatter where present, Markdown structure, links, naming/reference consistency, and the intended workflow. Do not invent build commands or add a test framework just for prose.
-
-## Inspect the complete change
-
-Review the branch diff against its target and current staged/unstaged changes, plus untracked files relevant to the task. Look for unrelated or accidental changes, debug logs, commented experiments, generated artifacts, credentials/secrets, local files, dead code, stale mocks, and suspicious dependency/lockfile changes. Do not expose secret values in reports. Preserve unrelated work rather than deleting it to make status clean.
+1. Run selected checks and record their command/scope and exact status: **passed**, **failed**, **blocked**, **not run**, or **not applicable**. Missing tooling or environment is not a pass.
+2. Investigate failures enough to distinguish task regressions, pre-existing failures, and environment problems. Label uncertainty. Fix in-scope regressions and rerun affected checks; never weaken checks to obtain a pass.
+3. Start and exercise the application when runtime behavior matters and the environment supports it. State mock/live-data and environment limits. Automated browser evidence does not equal human testing.
+4. Inspect the complete target diff and working state for unrelated changes, debug instrumentation, credentials, generated/local files, stale mocks, accidental dependencies, and incomplete behavior. Preserve unrelated work rather than deleting it.
 
 ## Report and stop
 
-Report:
+Report changed behavior, checks with exact outcomes, runtime evidence, failed or blocked items, unverified areas, assumptions, limitations, and concrete manual steps with expected results and important edge cases. Distinguish automated evidence from developer-reported manual testing.
 
-- Changed behavior and areas.
-- Checks run, exact pass/fail or other status, failures and likely causes.
-- Anything not tested, known limitations, assumptions, and incomplete or mock-only behavior.
-- Concrete manual steps: how to start/access the feature, what action to try, expected results, and important edge cases. For documentation, identify decisions and example requests to review.
+When relevant checks and evidence pass, end with **Ready for manual testing.** Otherwise end with **Not ready: validation failed or is incomplete** and identify the blocker. Update substantial task state with current validation and next step.
 
-When relevant automated checks pass, end with **Ready for manual testing.** If validation is blocked or failing, say **Not ready: validation failed or is incomplete**, identify the unresolved issue, and explain any limited testing that is still possible. Never obscure a failure behind a readiness claim.
-
-Do not commit, push, create a PR, or merge. Return results to `/prepare-pr` if it called this skill under existing explicit shipping authorization; that caller handles authorized shipping. Otherwise wait for the developer's testing feedback and continue fixes on the same branch.
+Do not commit, push, create a PR, publish evidence, or merge. If called by `/prepare-pr` under explicit shipping authorization, return results to that caller.

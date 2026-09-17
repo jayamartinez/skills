@@ -1,84 +1,90 @@
 # Personal Codex workflow
 
-This repository is the source of truth for how I work with Codex across software projects. It holds reusable workflow skills and global instructions: small branches, maintainable code, automated validation, hands-on testing, and human review before merge.
+This repository is the source of truth for a small, composable agentic-development workflow. It combines safe task setup, focused investigation and debugging, architecture-aware implementation, evidence-driven validation, hands-on testing, and explicit human control over shipping and merge.
 
-## Workflow
+## Skills
 
-```text
-/start-task
-      ↓
-implement
-      ↓
-/code-structure
-      ↓
-/validate-change
-      ↓
-manual testing ← fixes on the same branch; repeat cleanup and validation
-      ↓
-/prepare-pr
-      ↓
-PR + CI
-      ↓
-/review-pr
-      ↓
-human authorizes merge
-```
-
-Implementation normally stops at **Ready for manual testing**, before any commit, push, or PR. Codex reports what changed, automated results, what to try manually, and what remains unverified or mock-only. I test the software and give feedback on the same branch. An explicit request to commit, push, or open a PR can authorize those actions earlier; it does not authorize merging or establish that manual testing passed.
-
-| Skill | When to use it | Result |
+| Skill | Use it when | Result |
 | --- | --- | --- |
-| [/start-task](start-task/SKILL.md) | Begin a feature, fix, refactor, or meaningful maintenance task | Safe task branch and understood scope |
-| [/code-structure](code-structure/SKILL.md) | Review changed code after implementation or meaningful fixes | Focused cleanup following project patterns |
-| [/validate-change](validate-change/SKILL.md) | Check behavior and prepare for hands-on testing | Evidence, limitations, and manual test steps |
-| [/prepare-pr](prepare-pr/SKILL.md) | Explicitly request PR preparation or shipping | Final checks, commits, push, and PR |
-| [/review-pr](review-pr/SKILL.md) | Request review of a PR or branch diff | Review-only findings before substantial fixes |
+| [`start-task`](start-task/SKILL.md) | Beginning or resuming meaningful implementation | Safe branch/worktree, acceptance criteria, and optional task state |
+| [`investigate`](investigate/SKILL.md) | Researching behavior or an approach without editing | Facts, hypotheses, unknowns, affected boundaries, and a concise plan |
+| [`debug`](debug/SKILL.md) | Diagnosing an unknown failure and, when authorized, fixing it | Evidence-backed root cause, smallest appropriate fix, and regression proof |
+| [`architecture-review`](architecture-review/SKILL.md) | A substantial feature/refactor warrants boundary-level review | Proportionate architecture findings tied to project patterns |
+| [`code-structure`](code-structure/SKILL.md) | Cleaning up changed code after implementation or fixes | Focused local maintainability improvements |
+| [`validate-change`](validate-change/SKILL.md) | Verifying current behavior and readiness for human testing | Diff-sensitive checks, runtime evidence, limits, and manual test steps |
+| [`before-and-after`](before-and-after/SKILL.md) | A GitHub PR needs existing visual evidence attached | Idempotent before/after or preview block in the PR description |
+| [`prepare-pr`](prepare-pr/SKILL.md) | The user explicitly requests PR preparation or shipping | Final validation, commits, push, and a useful PR |
+| [`review-pr`](review-pr/SKILL.md) | Reviewing a PR or proposed branch diff | Independent, evidence-based review before fixes or merge |
 
-Use one branch per logical task, even across many prompts. Prefer readable names such as `feat/device-sync` or `fix/transcript-export`. Keep `main` stable and ship through PRs. Isolate conflicting concurrent tasks with worktrees when useful; do not require a worktree for simple single-task work.
+Security and performance are conditional passes inside validation and review, not standalone skills. Concurrency belongs in task setup. Acceptance criteria belong in task setup. This keeps routing clear and avoids checklist skills that would activate on unrelated changes.
 
-## Use across projects
-
-[AGENTS.md](AGENTS.md) is the maintained global workflow. Project-specific `AGENTS.md` files supply the stack, architecture, commands, design system, naming, directory conventions, backend assumptions, and mock/live-data boundaries. More specific project guidance wins legitimate conflicts with generic defaults, within higher-priority instructions and user authorization.
-
-To activate the workflow after reviewing it:
-
-1. Copy or link this repository's `AGENTS.md` to `~/.codex/AGENTS.md` (or your custom `CODEX_HOME`). Preserve and reconcile existing instructions first; an `AGENTS.override.md` there takes precedence. See [Codex instruction discovery](https://learn.chatgpt.com/docs/agent-configuration/agents-md).
-2. Copy or link the five skill folders into your user skill directory. Current documentation lists `~/.agents/skills`; use `.agents/skills` inside a project for project-only scope. Avoid duplicate installations with the same names. See [Codex skill discovery](https://learn.chatgpt.com/docs/build-skills).
-3. Start a new Codex session and ask it to list its active instructions and available workflow skills. Update this repository first and refresh copies after reviewed changes; links follow the checkout, so keep a linked checkout on reviewed work.
-
-The `/start-task`-style names in this repository are workflow shorthand, not registered custom slash commands. In Codex CLI/IDE, use `/skills` or mention `$start-task` (and likewise for the other names). Matching requests can also select skills automatically through their descriptions. Selection alone never grants shipping permission. See [skill invocation](https://learn.chatgpt.com/docs/build-skills).
-
-Cloning this repository alone does not install the skills globally. The repository deliberately contains only the global instructions, this README, and five `SKILL.md` files; it needs no runtime, external review service, or prescribed application architecture.
-
-## Practical example
+## Lifecycle
 
 ```text
-User: "Implement device synchronization."
-Codex:
-- uses /start-task and creates feat/device-sync
-- implements within the project's architecture
-- runs /code-structure and /validate-change
-- stops for manual testing with results and concrete test steps
-
-User: "The offline retry fails."
-Codex:
-- fixes the issue on feat/device-sync
-- repeats relevant cleanup and validation
-- returns to manual testing
-
-User: "Looks good, prepare the PR."
-Codex:
-- uses /prepare-pr and performs final validation
-- commits, pushes, and opens a PR into main
-
-User: "Review the PR."
-Codex:
-- uses /review-pr and reports findings without substantial edits
-
-User: "Merge it."
-Codex:
-- checks the current PR and required checks
-- merges only after this explicit authorization
+/start-task ── optional /investigate
+     ↓
+implement ── /debug for unknown failures
+     ↓
+conditional /architecture-review
+     ↓
+/code-structure
+     ↓
+/validate-change ── optional visual capture and /before-and-after
+     ↓
+manual testing ← fixes stay on the same branch; refresh invalidated evidence
+     ↓ explicit PR authorization
+/prepare-pr → PR + CI → /review-pr
+     ↓ explicit merge authorization
+merge
 ```
 
-For changes to this instruction repository, validate metadata, Markdown, links, workflow consistency, and the Git diff. Manual testing means reading the instructions and trying representative requests in a disposable project; there is no application build to invent.
+Implementation normally stops at **Ready for manual testing**, before commit, push, or PR. Passing automated checks does not mean a person tested the change. PR creation does not authorize merge.
+
+## Branches, worktrees, and concurrent work
+
+Use one branch per logical task across prompts and sessions. A clean single-task checkout uses a normal task branch. Worktrees are the isolation mechanism when another agent/task owns the checkout, unrelated dirty work cannot coexist safely, independent tasks must progress simultaneously, or a review must not disturb active implementation.
+
+Before creating a worktree, inspect existing worktrees and branches, refresh the base when appropriate, and check likely overlapping PRs/tasks. Never reuse another task's branch or alter its worktree. Remember that ports, databases, caches, and credentials may still be shared. After merge or closure, confirm the worktree contains no unique work before removing it, then prune the task branch and local task state when appropriate.
+
+## Resuming work
+
+Substantial tasks may keep a local note at `<git-common-dir>/codex-tasks/<branch>.md`. It records the goal, acceptance criteria, decisions, touched areas, current state, validation/manual status, limitations, and next step. The note lives inside Git metadata, so it is neither tracked nor copied into application repositories. Git and current files always outrank the note. Update it only at meaningful transitions and delete it after merge/closure or explicit abandonment.
+
+When asked to continue yesterday's task, identify the current or requested branch, inspect the repository and matching note, reconcile stale details, then continue the same logical task rather than opening a new branch.
+
+## Evidence-driven validation
+
+`validate-change` discovers the stack and selects checks from the actual diff. Passing lint, types, tests, or a build is useful but not always sufficient. Where practical, it also gathers proportional behavioral evidence: a bug reproduction that succeeds after the fix, a representative API exchange, CLI input/output, browser interaction, screenshot, state transition, log/event, or before/after measurement.
+
+Deeper security, performance, migration, contract, concurrency, dependency, and infrastructure checks run only when the change exposes those risks. Later edits invalidate affected evidence and require rerunning it. Trivial changes should not produce elaborate evidence bundles.
+
+## Visual before/after evidence
+
+[`before-and-after`](before-and-after/SKILL.md) is vendored from [vercel-labs/before-and-after](https://github.com/vercel-labs/before-and-after) at commit `8306d34f459b6704e08e6adb5829fcddb0dc3557` under the included [PolyForm Shield 1.0.0 license](before-and-after/LICENSE). It formats and attaches existing screenshots or recordings; capture remains the responsibility of the available browser tooling.
+
+Capture a meaningful before state when practical, then the corresponding after state from the validated code. Reuse validation media rather than recapturing it. Use after-only previews for net-new UI. Visual proof is useful for meaningful visible changes, not backend-only work or every tiny CSS edit. Failure to capture a trivial UI comparison is not automatically blocking. Never publish media containing private data, tokens, authenticated URLs, secrets, or sensitive browser state.
+
+The skill requires Node.js for its formatter and GitHub CLI 2.99+ for `gh --attach`; capture additionally requires compatible browser tooling such as `agent-browser`. Its vendored script does not host media publicly—it attaches media through GitHub.
+
+### Updating the vendored skill
+
+1. Review upstream changes and its current license at the pinned repository.
+2. Replace only `before-and-after/SKILL.md` and `before-and-after/scripts/format.mjs` with the upstream `skill/` payload; refresh `before-and-after/LICENSE` and the pinned commit above.
+3. Do not add local workflow rules inside the vendored files. Integration belongs in `AGENTS.md`, `validate-change`, `prepare-pr`, and this README.
+4. Run upstream formatter tests when available, this repository's skill/frontmatter and link checks, and a sample format/marker-replacement smoke test.
+5. Review the diff for upstream scope or dependency changes before accepting the update.
+
+The vendored files are intentionally kept close to upstream so updates remain mechanical and licensing notices remain intact.
+
+## Installation
+
+After reviewing this repository:
+
+1. Copy or link [`AGENTS.md`](AGENTS.md) to `~/.codex/AGENTS.md` or the configured Codex home. Reconcile existing global instructions first; a more specific project `AGENTS.md` can add project details.
+2. Copy or link the nine skill folders into the user skill directory used by your Codex installation. Avoid duplicate skill names. The folder links in the table above are the complete first-class set.
+3. Install optional dependencies only when needed. `before-and-after` needs Node.js, compatible capture tooling, and GitHub CLI 2.99+ for publication; the other workflow skills are instruction-only.
+4. Start a new session and confirm the global instructions and skill descriptions are discoverable. Update this source repository first, review the change, then refresh copied installations; symlinks follow the checked-out branch immediately.
+
+The `/skill-name` notation is workflow shorthand. Invoke a skill through the host's skill selector or `$skill-name`; matching requests may select it automatically from its frontmatter description. Skill selection never grants shipping or merge permission.
+
+For changes to this repository, validate frontmatter, Markdown, links, cross-skill references, routing overlap, vendored attribution, and the complete diff. Manual testing means reviewing the instructions and exercising representative requests in a disposable repository; do not invent an application build.

@@ -1,45 +1,55 @@
-# Development workflow
+# Agentic development workflow
 
-Build clean, maintainable software in small logical changes. The developer remains the final decision-maker. Respect the existing architecture, validate the work, and leave room for hands-on testing before shipping.
+Build clean, maintainable software in small logical changes. The developer remains the final decision-maker. Respect the project's architecture, prove changed behavior proportionately, and leave room for hands-on testing before shipping.
 
 ## Instruction scope
 
-Use this file as global guidance. Read applicable repository and directory `AGENTS.md` instructions before editing. Project instructions supplement this workflow with stack details, architecture, commands, design systems, naming and directory conventions, backend assumptions, and mock/live-data boundaries. More specific project instructions take precedence when they legitimately conflict with generic guidance; they do not override higher-priority instructions or expand the user's authorization.
+Use this file as global guidance. Read applicable repository and directory `AGENTS.md` instructions before acting. More specific project instructions supply stack, architecture, commands, design, naming, environment, and data boundaries. They may refine generic defaults, but cannot expand user authorization or override higher-priority instructions.
 
-## Default lifecycle
+## Route the work
 
-1. Use `/start-task` before meaningful implementation: inspect the repository, establish the task branch, and understand nearby code.
-2. Implement the requested change within the existing architecture.
-3. Use `/code-structure` to review and clean up the changed code without expanding scope.
-4. Use `/validate-change` to run repository-appropriate automated checks and inspect the complete diff.
-5. Stop at **Ready for manual testing.** Explain what changed, checks and results, concrete manual test steps, unverified areas, assumptions, limitations, and any mock-only or incomplete behavior.
-6. Iterate on the same branch from the developer's feedback. Repeat `/code-structure` after meaningful code changes and `/validate-change` after fixes.
-7. Use `/prepare-pr` when explicitly asked to prepare or ship a PR. Perform final review and validation, commit, push the task branch, and open a PR into `main` (or the explicitly designated target).
-8. After PR creation and CI, use `/review-pr` when asked to review. Start with a review-only pass and report findings before substantial fixes, unless review-and-fix was requested.
-9. The developer decides whether to merge. Merge only with explicit authorization; PR creation, passing CI, and a clean review are not merge approval.
+1. Use `/start-task` before meaningful implementation to establish the task branch or necessary worktree, define concise acceptance criteria, and resume or create lightweight task state.
+2. Use `/investigate` for read-only subsystem, architecture, bug, or approach research when the answer is unclear or implementation was not requested.
+3. Implement within the existing architecture. For an unknown failure, use `/debug` instead of changing several plausible causes at once.
+4. For a substantial feature or refactor whose boundaries or risks warrant it, use `/architecture-review`. Skip it for routine local changes.
+5. Use `/code-structure` after implementation or meaningful fixes for local maintainability cleanup without unrelated redesign.
+6. Use `/validate-change` to select checks from the actual diff and collect proportional evidence that the current code works. For meaningful visual changes, capture reusable before/after media when practical and use `/before-and-after` when a PR needs that media attached.
+7. Stop at **Ready for manual testing.** Report actual checks and evidence, concrete manual steps, unverified areas, assumptions, limitations, and mock-only behavior.
+8. Iterate on the same task branch. Repeat affected cleanup and validation; refresh evidence invalidated by later changes.
+9. Use `/prepare-pr` only after explicit PR/shipping authorization. After PR creation and CI, use `/review-pr` when asked for an independent review.
+10. Merge only with explicit authorization. PR creation, passing checks, clean review, or “looks good” without a PR request is not merge approval.
 
-Apply the relevant skills without requiring the developer to repeat their contents. The slash names above are workflow shorthand; use the host's skill selector or `$start-task`, `$code-structure`, `$validate-change`, `$prepare-pr`, and `$review-pr` where required. Read the selected skill before applying it. If unavailable, report that briefly and follow these workflow principles without pretending to have invoked it.
+Apply relevant skills without requiring the developer to repeat them. Read a selected skill before applying it. If unavailable, say so and follow these principles without pretending it ran.
 
-## Git and concurrent work
+## Git, concurrency, and cleanup
 
-- Treat `main` as stable. Do meaningful implementation on one branch per logical change, not one branch per prompt. Keep feedback and normal PR fixes on that branch.
-- Prefer `feat/<short-name>`, `fix/<short-name>`, `refactor/<short-name>`, `chore/<short-name>`, or `docs/<short-name>`. Avoid arbitrary IDs unless needed to disambiguate.
-- Before editing, inspect the current branch, staged/unstaged/untracked work, relevant branches, worktrees, and likely overlapping tasks when practical. Fetch the relevant remote when appropriate and choose an up-to-date base for new work.
-- Preserve user work and other tasks' changes. Do not discard, reset, overwrite, silently stash, or include unrelated work. Use isolated branches/worktrees when concurrency or a dirty shared checkout requires them; do not create worktrees for every simple task.
-- Never force-push `main`, silently merge into it, or rewrite shared history without authorization. Do not make experimental commits or push unfinished work merely because a turn ends.
+- Treat `main` as stable. Use one branch per logical task, not per prompt, and keep feedback and normal PR fixes on it.
+- A normal clean single-task checkout needs only a task branch. Do not create worktrees mechanically.
+- Before editing, inspect status and diffs, branches, worktrees, the relevant remote, and likely overlapping PRs or active tasks when practical. Choose an up-to-date base.
+- Use an isolated worktree and separate branch when another agent or task owns the checkout, unrelated dirty work cannot safely coexist, independent tasks must progress concurrently, or review needs isolation from active implementation. Never touch another task's worktree or check out its branch.
+- Worktrees do not isolate ports, databases, caches, credentials, or other shared resources. Confirm those belong to the current task before relying on or mutating them.
+- Preserve unrelated staged, unstaged, and untracked work. Never reset, overwrite, silently stash, or include it.
+- After a PR is merged or closed, remove a task worktree only after confirming it has no unique changes, then prune its local branch and task-state note as appropriate. Do not delete active or uncertain work.
+- Never force-push `main`, silently merge into it, or rewrite shared history without authorization.
 
-## Quality and validation
+## Task continuity
 
-Follow nearby naming, formatting, architecture, and data-flow patterns. Prefer focused functions/components, clear names, existing utilities, and explicit behavior. Extract repeated behavior when it improves correctness, readability, maintainability, testability, or future changes; do not blindly apply DRY or abstract tiny similarities.
+For substantial or multi-session work, keep a concise local note at `<git-common-dir>/codex-tasks/<branch>.md`; obtain the common directory with `git rev-parse --git-common-dir`. The note is Git-local infrastructure, not an application file, and must not be committed.
 
-Avoid unrelated refactors, unnecessary dependencies, architectural rewrites, and generic frameworks for simple problems. Report improvements that substantially expand scope as follow-ups. Do not impose a particular service layer or framework.
+Record the goal, acceptance criteria and must-not-change constraints, branch and base, important decisions, relevant areas, implementation state, validation evidence, developer-reported manual status, limitations, and next step. Update it at meaningful transitions, not after every command. On resume, verify it against Git and the current repository; current state always wins. Remove it after merge/closure or explicit abandonment. Skip it for trivial tasks that will finish in one short session.
 
-Discover validation commands from project instructions and configuration. Run the relevant format, lint, type, test, build, and smoke checks for the actual stack and risk. Inspect the final diff for accidental changes, secrets, local/generated files, debug code, stale mocks, and unexpected dependencies. Report failures and skipped checks accurately; never present unrun checks as passed. Automated UI checks supplement human visual and interaction testing.
+## Quality, risk, and evidence
+
+Follow nearby naming, architecture, and data-flow patterns. Prefer focused code and existing utilities. Avoid unrelated refactors, unnecessary dependencies, universal layer models, and speculative frameworks.
+
+Validation must be change-sensitive. Discover the actual stack and repository gates, then consider affected contracts, migrations, dependencies, UI states, concurrency, configuration, and runtime behavior. When the diff touches authentication, authorization, secrets, user input, file or network boundaries, sensitive data, database access, or security configuration, perform a focused security pass. When it touches hot paths, large collections, rendering, I/O, batching, caching, polling, or resource lifecycles, perform a focused performance pass and measure before/after when making a practical performance claim.
+
+Evidence should demonstrate behavior, not merely list passing commands: a reproduction that now succeeds, representative request/response or command/output, browser interaction or screenshot, state transition, log/event, or measured comparison as appropriate. Do not create heavyweight artifacts for trivial changes. Evidence belongs to the current revision; rerun affected evidence after later edits.
 
 ## Human control and shipping
 
-Implementation and `/validate-change` normally end before committing, pushing, opening a PR, or merging. The developer should run and use the software first. Do not infer permission to ship from completion or from "looks good" alone.
+Implementation and validation normally end before committing, pushing, opening a PR, or merging. Never claim human testing occurred unless the developer reported it.
 
-"Looks good, prepare the PR", "prep this for PR", "ship this as a PR", and "prepare this for review" in a PR context trigger `/prepare-pr` and authorize its commit/push/PR steps. An explicit request earlier in the task also counts; do not ask again for authorization already given. Never claim manual testing occurred unless the developer reported it. An explicit request to ship before manual testing is an exception to the default checkpoint, not evidence of a manual pass.
+“Looks good, prepare the PR,” “prep this for PR,” “ship this as a PR,” and equivalent explicit requests authorize sensible commits, push, and PR creation. Earlier explicit authorization also counts. A PR description should contain only useful verification, evidence, unverified items, and concrete risks or limitations. Never invent confidence or risk scores.
 
-For review findings, distinguish Blocking, Important, and Minor issues with actionable evidence and file/line references when available. Do not invent criticism. A clean review should say so and identify any remaining verification limits.
+Review authorization is read-only unless review-and-fix or external posting was requested. Distinguish Blocking, Important, and Minor findings with evidence. The developer decides whether to merge.
