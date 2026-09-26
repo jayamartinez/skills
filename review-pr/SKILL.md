@@ -9,7 +9,7 @@ Review as though you did not author the change. Treat the PR explanation, checks
 
 ## Establish current context
 
-1. Identify intent, acceptance criteria, applicable `AGENTS.md`, actual head/target, developer-reported manual verification, limitations, and risk triggers.
+1. Identify intent, acceptance criteria, applicable agent instructions (`AGENTS.md`, `CLAUDE.md`, or equivalent), actual head/target, developer-reported manual verification, limitations, and risk triggers.
 2. Review the complete target diff plus relevant callers, tests, configuration, contracts, dependencies, and surrounding architecture. Note the reviewed revision and current CI; stale evidence does not validate later commits.
 3. Start review-only. Do not edit, autoformat, post external comments, or change dependencies. Run focused non-mutating checks when useful. Use an isolated review worktree when active implementation or another checkout would be disturbed.
 

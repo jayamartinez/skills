@@ -9,7 +9,7 @@ Answer the question without editing application files or changing external state
 
 ## Establish the question
 
-State the question, requested depth, and relevant constraints. Read applicable `AGENTS.md` files. Do not create a task branch solely for research unless repository policy requires one.
+State the question, requested depth, and relevant constraints. Read applicable agent instructions (`AGENTS.md`, `CLAUDE.md`, or equivalent). Do not create a task branch solely for research unless repository policy requires one.
 
 ## Trace the system
 

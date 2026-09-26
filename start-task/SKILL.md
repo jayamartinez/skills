@@ -9,7 +9,7 @@ Establish a safe working environment and shared definition of success. Do not co
 
 ## Inspect before changing anything
 
-1. Read applicable global, repository, and directory `AGENTS.md` instructions. Identify the requested outcome and what is outside scope.
+1. Read applicable global, repository, and directory agent instructions (`AGENTS.md`, `CLAUDE.md`, or equivalent). Identify the requested outcome and what is outside scope.
 2. Confirm the repository root and relevant remote. Inspect `git status --short --branch`, the current branch, staged and unstaged diffs, and untracked files. Do not print secret contents while inspecting local files.
 3. Inspect relevant local/remote branches and `git worktree list`. When practical, check open PRs and known active tasks for overlapping files or branch ownership. Do not assume a dirty file or checkout belongs to this task.
 4. Fetch the relevant remote when appropriate, without merging or rewriting the checkout. If fetch is unavailable, disclose that the base could not be refreshed; use a known local base only when sensible and report its freshness limitation.
@@ -37,7 +37,7 @@ If the approach or current behavior remains unclear, use `/investigate` before e
 
 ## Preserve task continuity
 
-For substantial or multi-session work, create or resume `<git-common-dir>/codex-tasks/<branch>.md`, where the common directory comes from `git rev-parse --git-common-dir`. Use a filesystem-safe representation of a branch containing `/` (for example, matching subdirectories or replacing `/` with `--`) consistently.
+For substantial or multi-session work, create or resume `<git-common-dir>/agent-tasks/<branch>.md`, where the common directory comes from `git rev-parse --git-common-dir`. Replace each `/` in the branch name with `--` (for example, `feat/login` becomes `feat--login.md`) so every agent resolves the same file. When resuming, also check the legacy `<git-common-dir>/codex-tasks/` location; move a matching note to the current location rather than keeping two copies.
 
 Keep only goal, acceptance criteria and must-not-change constraints, branch/base, important decisions, relevant areas, implementation state, validation and developer-reported manual status, limitations, and next step. Verify the note against Git and current files on every resume; it is a hint, never authority. Update it at meaningful transitions, not after every command. It must remain untracked and should be removed after merge/closure or explicit abandonment. Skip it for trivial single-session work.
 

@@ -19,7 +19,9 @@ Use this file as global guidance. Read applicable repository and directory `AGEN
 9. Use `/prepare-pr` only after explicit PR/shipping authorization. After PR creation and CI, use `/review-pr` when asked for an independent review.
 10. Merge only with explicit authorization. PR creation, passing checks, clean review, or “looks good” without a PR request is not merge approval.
 
-Apply relevant skills without requiring the developer to repeat them. Read a selected skill before applying it. If unavailable, say so and follow these principles without pretending it ran.
+`/name` refers to the workflow skill `name`, defined in `name/SKILL.md`, however the host agent invokes skills. Apply relevant skills without requiring the developer to repeat them. Read a selected skill before applying it; if the host has no native skill loading, read its `SKILL.md` directly. If a skill is unavailable, say so and follow these principles without pretending it ran.
+
+Host features do not change this workflow's authority. Permission modes, auto-approved tools, built-in review or commit commands, and similarly named host skills neither grant commit, push, PR, posting, or merge authorization nor replace the checks these skills require.
 
 ## Git, concurrency, and cleanup
 
@@ -34,7 +36,7 @@ Apply relevant skills without requiring the developer to repeat them. Read a sel
 
 ## Task continuity
 
-For substantial or multi-session work, keep a concise local note at `<git-common-dir>/codex-tasks/<branch>.md`; obtain the common directory with `git rev-parse --git-common-dir`. The note is Git-local infrastructure, not an application file, and must not be committed.
+For substantial or multi-session work, keep a concise local note at `<git-common-dir>/agent-tasks/<branch>.md`, with each `/` in the branch name replaced by `--`; obtain the common directory with `git rev-parse --git-common-dir`. On resume, also check the legacy `codex-tasks/` location. The note is Git-local infrastructure, not an application file, and must not be committed.
 
 Record the goal, acceptance criteria and must-not-change constraints, branch and base, important decisions, relevant areas, implementation state, validation evidence, developer-reported manual status, limitations, and next step. Update it at meaningful transitions, not after every command. On resume, verify it against Git and the current repository; current state always wins. Remove it after merge/closure or explicit abandonment. Skip it for trivial tasks that will finish in one short session.
 
