@@ -11,7 +11,7 @@ Record only manual testing the developer actually reported. If shipping was expl
 
 ## Final preparation
 
-1. Read applicable `AGENTS.md`, acceptance criteria, and task state. Confirm repository, remote, owned task branch, target, and any existing PR. Do not operate in another task's checkout or commit implementation on `main`.
+1. Read applicable agent instructions (`AGENTS.md`, `CLAUDE.md`, or equivalent), acceptance criteria, and task state. Confirm repository, remote, owned task branch, target, and any existing PR. Do not operate in another task's checkout or commit implementation on `main`.
 2. Inspect status, complete target diff, branch commits, and relevant untracked files. Include only intended work; exclude unrelated, local, generated, debug, or secret-bearing files.
 3. Fetch the remote and assess target/head changes, concurrent work, and overlap. Synchronize safely using project conventions; do not rewrite shared history. Resolve conflicts by understanding both sides, or request a genuine product/ownership decision.
 4. Use `/code-structure` when appropriate, then `/validate-change`. Rerun affected checks and evidence after synchronization, conflicts, or later edits. Do not ship known task regressions. Identify manual behavior invalidated by code changes.

@@ -9,7 +9,7 @@ Answer “Does the current change actually appear to work?” Passing commands a
 
 ## Read the diff and choose checks
 
-Read applicable `AGENTS.md`, acceptance criteria, task state, the complete diff and untracked task files, surrounding behavior, repository scripts, CI, and stack conventions. Use documented tools and package managers; do not assume JavaScript or invent missing commands.
+Read applicable agent instructions (`AGENTS.md`, `CLAUDE.md`, or equivalent), acceptance criteria, task state, the complete diff and untracked task files, surrounding behavior, repository scripts, CI, and stack conventions. Use documented tools and package managers; do not assume JavaScript or invent missing commands.
 
 Choose checks proportional to behavior and risk. Include normal gates such as format, lint, static types, targeted tests, build, startup, and smoke testing when applicable, then add diff-triggered checks:
 

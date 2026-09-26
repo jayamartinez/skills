@@ -9,7 +9,7 @@ Ask whether the implementation is clean and understandable. `/validate-change` s
 
 ## Establish context
 
-Read applicable `AGENTS.md`, the task diff, nearby implementation, established architecture and naming conventions, existing helpers/utilities/components/services, and formatter/linter configuration. Preserve other tasks' work and the current task branch. Do not change structure based on a preferred framework or layer model.
+Read applicable agent instructions (`AGENTS.md`, `CLAUDE.md`, or equivalent), the task diff, nearby implementation, established architecture and naming conventions, existing helpers/utilities/components/services, and formatter/linter configuration. Preserve other tasks' work and the current task branch. Do not change structure based on a preferred framework or layer model.
 
 ## Review the changed code
 

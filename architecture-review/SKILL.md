@@ -9,7 +9,7 @@ Evaluate whether a substantial change fits the project's existing architecture a
 
 ## Establish context
 
-Read applicable `AGENTS.md`, acceptance criteria, relevant architecture documentation, the proposed or actual diff, surrounding modules and callers, tests, configuration, and existing patterns. Identify the current architecture before judging the change.
+Read applicable agent instructions (`AGENTS.md`, `CLAUDE.md`, or equivalent), acceptance criteria, relevant architecture documentation, the proposed or actual diff, surrounding modules and callers, tests, configuration, and existing patterns. Identify the current architecture before judging the change.
 
 ## Review proportionately
 

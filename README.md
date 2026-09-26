@@ -1,6 +1,6 @@
-# Personal Codex workflow
+# Personal agentic development workflow
 
-This repository is the source of truth for a small, composable agentic-development workflow. It combines safe task setup, focused investigation and debugging, architecture-aware implementation, evidence-driven validation, hands-on testing, and explicit human control over shipping and merge.
+This repository is the source of truth for a small, composable agentic-development workflow that works with any coding agent that reads Markdown instructions, including Claude Code and Codex. It combines safe task setup, focused investigation and debugging, architecture-aware implementation, evidence-driven validation, hands-on testing, and explicit human control over shipping and merge.
 
 ## Skills
 
@@ -48,7 +48,7 @@ Before creating a worktree, inspect existing worktrees and branches, refresh the
 
 ## Resuming work
 
-Substantial tasks may keep a local note at `<git-common-dir>/codex-tasks/<branch>.md`. It records the goal, acceptance criteria, decisions, touched areas, current state, validation/manual status, limitations, and next step. The note lives inside Git metadata, so it is neither tracked nor copied into application repositories. Git and current files always outrank the note. Update it only at meaningful transitions and delete it after merge/closure or explicit abandonment.
+Substantial tasks may keep a local note at `<git-common-dir>/agent-tasks/<branch>.md`, with `/` in the branch name replaced by `--` so that different agents resolve the same file. Notes from earlier versions may still live under `codex-tasks/`; the next resume moves them. It records the goal, acceptance criteria, decisions, touched areas, current state, validation/manual status, limitations, and next step. The note lives inside Git metadata, so it is neither tracked nor copied into application repositories. Git and current files always outrank the note. Update it only at meaningful transitions and delete it after merge/closure or explicit abandonment.
 
 When asked to continue yesterday's task, identify the current or requested branch, inspect the repository and matching note, reconcile stale details, then continue the same logical task rather than opening a new branch.
 
@@ -64,13 +64,13 @@ Deeper security, performance, migration, contract, concurrency, dependency, and 
 
 Capture a meaningful before state when practical, then the corresponding after state from the validated code. Reuse validation media rather than recapturing it. Use after-only previews for net-new UI. Visual proof is useful for meaningful visible changes, not backend-only work or every tiny CSS edit. Failure to capture a trivial UI comparison is not automatically blocking. Never publish media containing private data, tokens, authenticated URLs, secrets, or sensitive browser state.
 
-The skill requires Node.js for its formatter and GitHub CLI 2.99+ for `gh --attach`; capture additionally requires compatible browser tooling such as `agent-browser`. Its vendored script does not host media publicly—it attaches media through GitHub.
+The skill requires Node.js for its formatter and GitHub CLI 2.99+ for `gh --attach`; capture additionally requires compatible browser tooling such as `agent-browser`. Its vendored script does not host media publicly—it attaches media through GitHub. The upstream instructions refer to the formatter as `skill/scripts/format.mjs`; resolve that path relative to the installed skill folder (`${CLAUDE_SKILL_DIR}/scripts/format.mjs` in Claude Code).
 
 ### Updating the vendored skill
 
 1. Review upstream changes and its current license at the pinned repository.
 2. Replace only `before-and-after/SKILL.md` and `before-and-after/scripts/format.mjs` with the upstream `skill/` payload; refresh `before-and-after/LICENSE` and the pinned commit above.
-3. Do not add local workflow rules inside the vendored files. Integration belongs in `AGENTS.md`, `validate-change`, `prepare-pr`, and this README.
+3. Do not add local workflow rules inside the vendored files. Integration belongs in `AGENTS.md`, host adapters such as `CLAUDE.md`, `validate-change`, `prepare-pr`, and this README.
 4. Run upstream formatter tests when available, this repository's skill/frontmatter and link checks, and a sample format/marker-replacement smoke test.
 5. Review the diff for upstream scope or dependency changes before accepting the update.
 
@@ -78,13 +78,32 @@ The vendored files are intentionally kept close to upstream so updates remain me
 
 ## Installation
 
-After reviewing this repository:
+[`AGENTS.md`](AGENTS.md) holds the shared workflow and each skill folder holds a portable `SKILL.md` with only `name` and `description` frontmatter. Host-specific guidance lives in an adapter file such as [`CLAUDE.md`](CLAUDE.md). After reviewing this repository, install for each agent you use. Reconcile existing global instructions first; more specific project instructions can add project details.
 
-1. Copy or link [`AGENTS.md`](AGENTS.md) to `~/.codex/AGENTS.md` or the configured Codex home. Reconcile existing global instructions first; a more specific project `AGENTS.md` can add project details.
-2. Copy or link the nine skill folders into the user skill directory used by your Codex installation. Avoid duplicate skill names. The folder links in the table above are the complete first-class set.
-3. Install optional dependencies only when needed. `before-and-after` needs Node.js, compatible capture tooling, and GitHub CLI 2.99+ for publication; the other workflow skills are instruction-only.
-4. Start a new session and confirm the global instructions and skill descriptions are discoverable. Update this source repository first, review the change, then refresh copied installations; symlinks follow the checked-out branch immediately.
+### Claude Code
 
-The `/skill-name` notation is workflow shorthand. Invoke a skill through the host's skill selector or `$skill-name`; matching requests may select it automatically from its frontmatter description. Skill selection never grants shipping or merge permission.
+1. Link or copy the nine skill folders into `~/.claude/skills/`, so that each skill lives at `~/.claude/skills/<name>/SKILL.md`. Symlinked folders are supported.
+2. Import the shared workflow and the adapter from your global `~/.claude/CLAUDE.md`, using this checkout's absolute path:
+
+   ```text
+   @/path/to/skills/AGENTS.md
+   @/path/to/skills/CLAUDE.md
+   ```
+
+   Claude Code reads `AGENTS.md` natively only when no `CLAUDE.md` is present, so import it explicitly. The adapter imports `AGENTS.md` too; one extra import is harmless, but you can list only `CLAUDE.md` if you prefer.
+3. Personal skills take precedence over same-named bundled skills, so this workflow's `debug` replaces Claude Code's bundled `/debug` session-troubleshooting skill. Rename the folder and its `name` if you need both.
+
+### Codex and other agents
+
+1. Copy or link [`AGENTS.md`](AGENTS.md) to the agent's global instructions location, for example `~/.codex/AGENTS.md`.
+2. Copy or link the nine skill folders into the agent's user skill directory. Avoid duplicate skill names. The folder links in the table above are the complete first-class set.
+3. An agent without native skills can still follow the workflow by reading `<skill>/SKILL.md` directly, as `AGENTS.md` instructs.
+
+### All agents
+
+- Install optional dependencies only when needed. `before-and-after` needs Node.js, compatible capture tooling, and GitHub CLI 2.99+ for publication; the other workflow skills are instruction-only.
+- Start a new session and confirm the global instructions and skill descriptions are discoverable. Update this source repository first, review the change, then refresh copied installations; symlinks follow the checked-out branch immediately.
+
+The `/skill-name` notation is workflow shorthand for the skill of that name. Claude Code invokes it as `/skill-name`, Codex uses its skill selector or `$skill-name`, and matching requests may select a skill automatically from its frontmatter description. Skill selection, permission modes, and host review commands never grant shipping or merge permission.
 
 For changes to this repository, validate frontmatter, Markdown, links, cross-skill references, routing overlap, vendored attribution, and the complete diff. Manual testing means reviewing the instructions and exercising representative requests in a disposable repository; do not invent an application build.
