@@ -58,6 +58,10 @@ When asked to continue yesterday's task, identify the current or requested branc
 
 Deeper security, performance, migration, contract, concurrency, dependency, and infrastructure checks run only when the change exposes those risks. Later edits invalidate affected evidence and require rerunning it. Trivial changes should not produce elaborate evidence bundles.
 
+## PR size
+
+`AGENTS.md` sets a default budget of about 1,000 reviewed lines per PR, with 2,500 as the point where splitting is expected. Lockfiles, generated output, snapshots, and vendored files do not count. `start-task` plans slices when a task will clearly exceed the budget, `validate-change` reports the current size, `prepare-pr` proposes a split before shipping an oversized PR, and `review-pr` flags unexplained ones. Repository bootstraps, mechanical renames or codemods, generated code, dependency upgrades, and tightly coupled changes are legitimate exceptions. They proceed as one PR with a short **Size** note that gives the reason and a reading order. The budget is guidance, not a gate, and the developer can always choose one PR.
+
 ## Visual before/after evidence
 
 [`before-and-after`](before-and-after/SKILL.md) is vendored from [vercel-labs/before-and-after](https://github.com/vercel-labs/before-and-after) at commit `8306d34f459b6704e08e6adb5829fcddb0dc3557` under the included [PolyForm Shield 1.0.0 license](before-and-after/LICENSE). It formats and attaches existing screenshots or recordings; capture remains the responsibility of the available browser tooling.
@@ -76,33 +80,38 @@ The skill requires Node.js for its formatter and GitHub CLI 2.99+ for `gh --atta
 
 The vendored files are intentionally kept close to upstream so updates remain mechanical and licensing notices remain intact.
 
+**Local patch:** `scripts/format.mjs` carries a small Windows fix from [vercel-labs/before-and-after#14](https://github.com/vercel-labs/before-and-after/pull/14). Without it, the formatter exits silently on Windows and emits backslash media paths. When updating, keep the patch until that PR merges, then take upstream unchanged.
+
 ## Installation
 
-[`AGENTS.md`](AGENTS.md) holds the shared workflow and each skill folder holds a portable `SKILL.md` with only `name` and `description` frontmatter. Host-specific guidance lives in an adapter file such as [`CLAUDE.md`](CLAUDE.md). After reviewing this repository, install for each agent you use. Reconcile existing global instructions first; more specific project instructions can add project details.
+[`AGENTS.md`](AGENTS.md) holds the shared workflow and each skill folder holds a portable `SKILL.md` with only `name` and `description` frontmatter. Host-specific guidance lives in an adapter file such as [`CLAUDE.md`](CLAUDE.md). After reviewing this repository, install it for each agent you use. Reconcile existing global instructions first. More specific project instructions can add project details.
 
-### Claude Code
+### Install or refresh with the script
 
-1. Link or copy the nine skill folders into `~/.claude/skills/`, so that each skill lives at `~/.claude/skills/<name>/SKILL.md`. Symlinked folders are supported.
-2. Import the shared workflow and the adapter from your global `~/.claude/CLAUDE.md`, using this checkout's absolute path:
+From this checkout, run:
 
-   ```text
-   @/path/to/skills/AGENTS.md
-   @/path/to/skills/CLAUDE.md
-   ```
+```bash
+node scripts/install.mjs
+```
 
-   Claude Code reads `AGENTS.md` natively only when no `CLAUDE.md` is present, so import it explicitly. The adapter imports `AGENTS.md` too; one extra import is harmless, but you can list only `CLAUDE.md` if you prefer.
-3. Personal skills take precedence over same-named bundled skills, so this workflow's `debug` replaces Claude Code's bundled `/debug` session-troubleshooting skill. Rename the folder and its `name` if you need both.
+It links every skill folder into `~/.claude/skills/` (Claude Code) and `~/.agents/skills/` (Codex), links this checkout to `~/.claude/agent-workflow`, adds `@~/.claude/agent-workflow/CLAUDE.md` to `~/.claude/CLAUDE.md`, and links `~/.codex/AGENTS.md` to [`AGENTS.md`](AGENTS.md). On Windows, folders use junctions, which need no elevated rights. The `AGENTS.md` file link needs Developer Mode; without it, the script copies the file and you rerun it after `AGENTS.md` changes.
 
-### Codex and other agents
+Because these are links, edits to existing skills and `AGENTS.md` reach both agents immediately. Rerun the script after adding, renaming, or removing a skill. It also removes links to deleted skills. Existing non-link copies, including older Codex copies in `~/.codex/skills/`, move to `~/.agent-workflow-backups/<timestamp>/` rather than being deleted. Other skills and your existing `~/.claude/CLAUDE.md` content are left alone. `node scripts/install.mjs --check` reports drift without changing anything and exits nonzero when something needs attention.
 
-1. Copy or link [`AGENTS.md`](AGENTS.md) to the agent's global instructions location, for example `~/.codex/AGENTS.md`.
-2. Copy or link the nine skill folders into the agent's user skill directory. Avoid duplicate skill names. The folder links in the table above are the complete first-class set.
-3. An agent without native skills can still follow the workflow by reading `<skill>/SKILL.md` directly, as `AGENTS.md` instructs.
+Links follow whichever branch this checkout has checked out, so both agents see an unmerged task branch while it is checked out. Keep this checkout on `main` between tasks.
+
+### Claude Code notes
+
+Claude Code reads `AGENTS.md` natively only when no `CLAUDE.md` is present, so the global file imports the adapter, which imports `AGENTS.md`. Personal skills take precedence over same-named bundled skills, so this workflow's `debug` replaces Claude Code's bundled `/debug` session-troubleshooting skill. Rename the folder and its `name` if you need both.
+
+### Other agents
+
+Link or copy [`AGENTS.md`](AGENTS.md) to the agent's global instructions location and the skill folders into its user skill directory, avoiding duplicate skill names. An agent without native skills can still follow the workflow by reading `<skill>/SKILL.md` directly, as `AGENTS.md` instructs.
 
 ### All agents
 
-- Install optional dependencies only when needed. `before-and-after` needs Node.js, compatible capture tooling, and GitHub CLI 2.99+ for publication; the other workflow skills are instruction-only.
-- Start a new session and confirm the global instructions and skill descriptions are discoverable. Update this source repository first, review the change, then refresh copied installations; symlinks follow the checked-out branch immediately.
+- Install optional dependencies only when needed. `before-and-after` needs Node.js, compatible capture tooling such as `agent-browser` (`npm install -g agent-browser`), and GitHub CLI 2.99+ for publication (`gh --version`; older versions lack `--attach`). The other workflow skills are instruction-only.
+- Start a new session and confirm the global instructions and skill descriptions are discoverable. Update this source repository first and review the change; linked installations pick it up automatically.
 
 The `/skill-name` notation is workflow shorthand for the skill of that name. Claude Code invokes it as `/skill-name`, Codex uses its skill selector or `$skill-name`, and matching requests may select a skill automatically from its frontmatter description. Skill selection, permission modes, and host review commands never grant shipping or merge permission.
 

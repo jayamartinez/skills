@@ -14,8 +14,9 @@ Record only manual testing the developer actually reported. If shipping was expl
 1. Read applicable agent instructions (`AGENTS.md`, `CLAUDE.md`, or equivalent), acceptance criteria, and task state. Confirm repository, remote, owned task branch, target, and any existing PR. Do not operate in another task's checkout or commit implementation on `main`.
 2. Inspect status, complete target diff, branch commits, and relevant untracked files. Include only intended work; exclude unrelated, local, generated, debug, or secret-bearing files.
 3. Fetch the remote and assess target/head changes, concurrent work, and overlap. Synchronize safely using project conventions; do not rewrite shared history. Resolve conflicts by understanding both sides, or request a genuine product/ownership decision.
-4. Use `/code-structure` when appropriate, then `/validate-change`. Rerun affected checks and evidence after synchronization, conflicts, or later edits. Do not ship known task regressions. Identify manual behavior invalidated by code changes.
-5. For meaningful visual changes, reuse validated media and apply `/before-and-after` after the PR exists. Do not block backend or trivial/invisible changes for lack of screenshots, and never publish sensitive captures.
+4. Measure reviewed size as `AGENTS.md` defines it. Above 2,500 lines without a listed exception, stop before committing and propose a split into ordered, independently shippable PRs; continue as one PR only when the developer chooses to. For any PR above the 1,000-line target that proceeds, whether it is a listed exception or the developer's choice, add a short **Size** note that gives the reason, the reading order, and which parts are mechanical.
+5. Use `/code-structure` when appropriate, then `/validate-change`. Rerun affected checks and evidence after synchronization, conflicts, or later edits. Do not ship known task regressions. Identify manual behavior invalidated by code changes.
+6. For meaningful visual changes, reuse validated media and apply `/before-and-after` after the PR exists, so the reviewer sees what changed without checking out the branch. Prefer screenshots for layout or styling and a short recording for interaction, motion, or multi-step flows. Do not block backend or trivial/invisible changes for lack of screenshots, and never publish sensitive captures.
 
 ## Commit, push, and open
 
@@ -32,6 +33,7 @@ Lead with the problem and resulting behavior. Include only sections that carry u
 - **Verification** for actual lint, types, tests, build, runtime smoke, and developer-reported manual checks;
 - **Evidence** for representative behavioral proof or a before/after block;
 - **Not verified** for meaningful gaps;
+- **Size** for the reason, reading order, and mechanical parts of a PR above the size target;
 - **Risks / limitations** for concrete concerns such as schema/data migration, security boundaries, concurrency, public contracts, destructive behavior, major dependencies, or infrastructure.
 
 Do not dump empty template sections, local paths, secrets, raw task notes, invented testing, or subjective risk scores. Keep automated and manual results distinct. Use the vendored visual skill's marker block without rewriting unrelated PR prose.

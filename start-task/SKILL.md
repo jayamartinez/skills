@@ -33,6 +33,10 @@ Read the relevant entry points, nearby code and tests, existing helpers/componen
 
 For meaningful work, derive a short set of observable acceptance criteria, what must not change, and important assumptions. Do not impose a planning ceremony on an obvious one-line edit. If ambiguity would materially change product behavior, ask for the missing decision; otherwise make and state a reasonable assumption.
 
+Estimate the reviewed size against the `AGENTS.md` PR size guidance. When the task will clearly exceed the target and no listed exception applies, propose independently shippable slices with their order, then scope this branch to the first slice. When the developer continues an earlier slice, keep follow-on slices out of its branch.
+
+For a meaningful visible change, capture the current “before” state now when practical, while the unchanged UI is still easy to reach, and keep it outside tracked files for later validation and PR evidence.
+
 If the approach or current behavior remains unclear, use `/investigate` before editing. For an unknown failure, use `/debug`.
 
 ## Preserve task continuity
