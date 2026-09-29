@@ -48,7 +48,7 @@ Evidence must correspond to the current code and environment. Rerun affected evi
 
 ## Report and stop
 
-Report changed behavior, checks with exact outcomes, runtime evidence, failed or blocked items, unverified areas, assumptions, limitations, and concrete manual steps with expected results and important edge cases. Distinguish automated evidence from developer-reported manual testing.
+Report changed behavior, checks with exact outcomes, runtime evidence, current reviewed size against the `AGENTS.md` PR size guidance with any exclusions, failed or blocked items, unverified areas, assumptions, limitations, and concrete manual steps with expected results and important edge cases. Distinguish automated evidence from developer-reported manual testing.
 
 When relevant checks and evidence pass, end with **Ready for manual testing.** Otherwise end with **Not ready: validation failed or is incomplete** and identify the blocker. Update substantial task state with current validation and next step.
 

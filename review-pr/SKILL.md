@@ -20,7 +20,8 @@ Check behavior, edge cases, regressions, scope, error handling, accessibility, t
 - architecture: boundaries, dependency direction, state ownership, contracts, persistence, concurrency, failures, observability, and fit with existing patterns;
 - security: trust boundaries, attacker-controlled input, authentication/authorization, injection, SSRF, traversal, secrets/logs, crypto, replay, races, privilege, and leakage;
 - performance: query/request counts, repeated work, rendering, serialization, scale, batching, payloads, allocations, blocking, leaks, polling, and cache invalidation;
-- migrations/contracts/infrastructure: compatibility, rollout/rollback assumptions, consumers, configuration, and destructive behavior.
+- migrations/contracts/infrastructure: compatibility, rollout/rollback assumptions, consumers, configuration, and destructive behavior;
+- size: when reviewed lines exceed the `AGENTS.md` PR size guidance without a stated, credible exception, report an Important finding with a concrete split.
 
 Trace a plausible trigger and impact for every finding. Distinguish confirmed defects, evidence-backed risks, and open questions. Verify that reported evidence matches the reviewed revision and meaningfully exercises the claim. Do not impose personal architecture, invent criticism, or demand heavyweight proof for trivial changes.
 

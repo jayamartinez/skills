@@ -48,6 +48,14 @@ Validation must be change-sensitive. Discover the actual stack and repository ga
 
 Evidence should demonstrate behavior, not merely list passing commands: a reproduction that now succeeds, representative request/response or command/output, browser interaction or screenshot, state transition, log/event, or measured comparison as appropriate. Do not create heavyweight artifacts for trivial changes. Evidence belongs to the current revision; rerun affected evidence after later edits.
 
+## PR size
+
+Keep PRs reviewable. Measure reviewed lines: additions plus deletions against the merge base, excluding lockfiles, generated output, snapshots, and vendored or binary files. Aim for roughly 1,000 lines; treat 2,500 as the point where splitting is expected. This is a default, not a hard gate.
+
+- Plan slices when a task will clearly exceed the target: preparatory refactors, contracts or backend, then UI; feature flags for incomplete behavior; or stacked branches. Each slice should work, pass validation, and be understandable on its own.
+- Legitimate exceptions include a repository bootstrap or initial commit, mechanical renames or codemods, generated migrations or clients, dependency or framework upgrades, vendored imports, and tightly coupled changes that cannot be split without shipping broken intermediate states.
+- Above 2,500 lines, propose a split first. When an exception applies or the developer chooses one PR, state the reason in the PR description and help the reviewer navigate it (reading order and which parts are mechanical). Never split mechanically just to meet a number.
+
 ## Human control and shipping
 
 Implementation and validation normally end before committing, pushing, opening a PR, or merging. Never claim human testing occurred unless the developer reported it.
