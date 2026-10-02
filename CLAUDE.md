@@ -6,7 +6,7 @@
 
 ## Discovering skills
 
-Each workflow skill is a folder containing `SKILL.md` with `name` and `description` frontmatter: `start-task`, `investigate`, `debug`, `architecture-review`, `code-structure`, `validate-change`, `before-and-after`, `prepare-pr`, and `review-pr`.
+Each workflow skill is a folder containing `SKILL.md` with `name` and `description` frontmatter: `start-task`, `investigate`, `debug`, `architecture-review`, `code-structure`, `validate-change`, `before-and-after`, `prepare-pr`, `review-pr`, and `review-loop`.
 
 - When the skills are installed (see the README), they appear as Claude Code skills. `/name` invokes one directly, and Claude may select one from its description.
 - When they are not installed (for example, while working in this repository), read `<skill>/SKILL.md` from this repository directly. Do not treat a skill as applied without reading it.

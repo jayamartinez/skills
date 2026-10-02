@@ -16,7 +16,7 @@ Use this file as global guidance. Read applicable repository and directory `AGEN
 6. Use `/validate-change` to select checks from the actual diff and collect proportional evidence that the current code works. For meaningful visual changes, capture reusable before/after media when practical and use `/before-and-after` when a PR needs that media attached.
 7. Stop at **Ready for manual testing.** Report actual checks and evidence, concrete manual steps, unverified areas, assumptions, limitations, and mock-only behavior.
 8. Iterate on the same task branch. Repeat affected cleanup and validation; refresh evidence invalidated by later changes.
-9. Use `/prepare-pr` only after explicit PR/shipping authorization. After PR creation and CI, use `/review-pr` when asked for an independent review.
+9. Use `/prepare-pr` only after explicit PR/shipping authorization. After PR creation and CI, use `/review-pr` when asked for an independent review, and `/review-loop` when asked to work the PR through its automated review.
 10. Merge only with explicit authorization. PR creation, passing checks, clean review, or “looks good” without a PR request is not merge approval.
 
 `/name` refers to the workflow skill `name`, defined in `name/SKILL.md`, however the host agent invokes skills. Apply relevant skills without requiring the developer to repeat them. Read a selected skill before applying it; if the host has no native skill loading, read its `SKILL.md` directly. If a skill is unavailable, say so and follow these principles without pretending it ran.
@@ -62,4 +62,4 @@ Implementation and validation normally end before committing, pushing, opening a
 
 “Looks good, prepare the PR,” “prep this for PR,” “ship this as a PR,” and equivalent explicit requests authorize sensible commits, push, and PR creation. Earlier explicit authorization also counts. A PR description should contain only useful verification, evidence, unverified items, and concrete risks or limitations. Never invent confidence or risk scores.
 
-Review authorization is read-only unless review-and-fix or external posting was requested. Distinguish Blocking, Important, and Minor findings with evidence. The developer decides whether to merge.
+Review authorization is read-only unless review-and-fix or external posting was requested. A request for the review loop authorizes fix commits and ordinary pushes to that PR's branch, for at most three rounds, and nothing else. Distinguish Blocking, Important, and Minor findings with evidence. The developer decides whether to merge.

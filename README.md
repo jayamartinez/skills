@@ -15,6 +15,7 @@ This repository is the source of truth for a small, composable agentic-developme
 | [`before-and-after`](before-and-after/SKILL.md) | A GitHub PR needs existing visual evidence attached | Idempotent before/after or preview block in the PR description |
 | [`prepare-pr`](prepare-pr/SKILL.md) | The user explicitly requests PR preparation or shipping | Final validation, commits, push, and a useful PR |
 | [`review-pr`](review-pr/SKILL.md) | Reviewing a PR or proposed branch diff | Independent, evidence-based review before fixes or merge |
+| [`review-loop`](review-loop/SKILL.md) | Asked to work a PR through its automated review | Real findings fixed and pushed, for at most three rounds, until the review is clean |
 
 Security and performance are conditional passes inside validation and review, not standalone skills. Concurrency belongs in task setup. Acceptance criteria belong in task setup. This keeps routing clear and avoids checklist skills that would activate on unrelated changes.
 
@@ -33,7 +34,7 @@ conditional /architecture-review
      ↓
 manual testing ← fixes stay on the same branch; refresh invalidated evidence
      ↓ explicit PR authorization
-/prepare-pr → PR + CI → /review-pr
+/prepare-pr → PR + CI → /review-pr, or /review-loop on request
      ↓ explicit merge authorization
 merge
 ```
